@@ -22,21 +22,13 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.nilesh98.swiggy"
+      "package": "com.swiggy.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "98d87b52-e120-4466-8e0c-054aa3e5308d"
-      }
-    },
     "runtimeVersion": {
       "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/98d87b52-e120-4466-8e0c-054aa3e5308d"
     }
   }
 }

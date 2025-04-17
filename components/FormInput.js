@@ -1,6 +1,6 @@
 import React from "react";
-import { StyleSheet, View, } from "react-native";
-import { COLORS, SIZES, } from "./constants/theme";
+import { StyleSheet, View } from "react-native";
+import { COLORS, SIZES } from "./constants/theme";
 import { Controller } from "react-hook-form";
 import AppTextInput from "./AppTextInput";
 import AppText from "./AppText";
@@ -12,7 +12,10 @@ const FormInput = ({
     rules = {},
     keyboardType,
     maxLength,
-    inputStyle
+    inputStyle,
+    icon,
+    multiline,
+    ...otherProps
 }) => {
 
     return (
@@ -29,7 +32,10 @@ const FormInput = ({
                         onChangeText={onChange}
                         value={value}
                         maxLength={maxLength}
+                        icon={icon}
+                        multiline={multiline}
                         inputStyle={[{ borderColor: error ? 'red' : COLORS.purple2 }, inputStyle]}
+                        {...otherProps}
                     />
                     {error ? <AppText style={styles.error}>{error.message || "Error"}</AppText> : <AppText style={styles.error}>{ }</AppText>}
                 </>

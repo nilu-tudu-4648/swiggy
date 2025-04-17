@@ -6,6 +6,7 @@ import {
   ScrollView,
   Pressable,
   Image,
+  Platform,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -30,72 +31,37 @@ const MenuScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   useEffect(() => {
     const fetchMenu = () => {
-      setMenu(route.params.menu);
+      setMenu(route.params.menu || []);
     };
 
     fetchMenu();
-  }, []);
+  }, [route.params.menu]);
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
   return (
     <>
-      <ScrollView style={{ marginTop: 50 }}>
-        <View
-          style={{
-            height: 300,
-            backgroundColor: "#B0C4DE",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              margin: 10,
-            }}
-          >
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.headerContainer}>
+          <View style={styles.headerTopRow}>
             <Ionicons
               onPress={() => navigation.goBack()}
               name="arrow-back"
               size={24}
               color="black"
             />
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={styles.searchContainer}>
               <AntDesign name="search1" size={22} color="black" />
-              <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 7 }}>
-                Search
-              </Text>
+              <Text style={styles.searchText}>Search</Text>
             </View>
           </View>
 
-          <View
-            style={{
-              backgroundColor: "white",
-              height: 210,
-              marginHorizontal: 10,
-              marginVertical: 5,
-              padding: 12,
-              borderRadius: 15,
-              elevation:7,
-              justifyContent:'center'
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={{ fontSize: 14, fontWeight: "bold" }}>
-                {route.params.name}
-              </Text>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={styles.infoCard}>
+            <View style={styles.infoCardTopRow}>
+              <Text style={styles.restaurantName}>{route.params.name}</Text>
+              <View style={styles.infoCardIcons}>
                 <AntDesign
-                  style={{ marginHorizontal: 14 }}
+                  style={styles.shareIcon}
                   name="sharealt"
                   size={20}
                   color="black"
@@ -104,175 +70,69 @@ const MenuScreen = () => {
               </View>
             </View>
 
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 7,
-              }}
-            >
+            <View style={styles.ratingTimeContainer}>
               <MaterialIcons name="stars" size={20} color="green" />
-              <Text style={{ marginLeft: 3, fontSize: 12, fontWeight: "400" }}>
-                {route.params.rating}
-              </Text>
-              <Text style={{ marginLeft: 3 }}>•</Text>
-              <Text style={{ marginLeft: 3, fontSize: 12, fontWeight: "400" }}>
-                {route.params.time}mins
-              </Text>
+              <Text style={styles.ratingText}>{route.params.rating}</Text>
+              <Text style={styles.dotSeparator}>•</Text>
+              <Text style={styles.timeText}>{route.params.time}mins</Text>
             </View>
 
-            <Text style={{ marginTop: 8, color: "gray", fontSize: 12 }}>
-              {route.params.cuisines}
-            </Text>
+            <Text style={styles.cuisinesText}>{route.params.cuisines}</Text>
 
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 10,
-              }}
-            >
-              <Text style={{ fontSize: 11, fontWeight: "bold" }}>Outlet</Text>
-              <Text
-                style={{ marginLeft: 15, fontSize: 11 }}
-              >
-                {route.params.adress}
-              </Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Outlet</Text>
+              <Text style={styles.detailValue}>{route.params.adress}</Text>
             </View>
 
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 10,
-              }}
-            >
-              <Text style={{ fontSize: 11, fontWeight: "bold" }}>22 mins</Text>
-              <Text
-                style={{ marginLeft: 15, fontSize: 11 }}
-              >
-                Home
-              </Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>22 mins</Text>
+              <Text style={styles.detailValue}>Home</Text>
             </View>
 
-            <Text
-              style={{
-                borderColor: "gray",
-                borderWidth: 0.25,
-                height: .1,
-                marginTop: 12,
-              }}
-            />
+            <View style={styles.separator} />
 
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 10,
-              }}
-            >
+            <View style={styles.deliveryInfoRow}>
               <FontAwesome5 name="bicycle" size={20} color="orange" />
-              <Text style={{ marginLeft: 7, color: "gray", fontSize: 11 }}>
-                0-3 Kms |
-              </Text>
-              <Text style={{ marginLeft: 7, color: "gray", fontSize: 11 }}>
+              <Text style={styles.deliveryText}>0-3 Kms |</Text>
+              <Text style={styles.deliveryFeeText}>
                 35 Delivery Fee will Apply
               </Text>
             </View>
           </View>
         </View>
-        <Text
-          style={{
-            textAlign: "center",
-            fontSize: 14,
-            fontWeight: "500",
-            marginTop: 10,
-          }}
-        >
-          MENU
-        </Text>
-        <Text
-          style={{
-            borderColor: "gray",
-            borderWidth: 0.6,
-            height: 1,
-            marginTop: 12,
-          }}
-        />
+        <Text style={styles.menuTitle}>MENU</Text>
+        <View style={styles.menuSeparator} />
 
-        {route.params?.menu.map((item, index) => (
-          <FoodItem item={item} key={index} />
+        {menu.map((item) => (
+          <FoodItem item={item} key={item.id} />
         ))}
       </ScrollView>
 
-      <Pressable
-        onPress={toggleModal}
-        style={{
-          width: 70,
-          height: 70,
-          borderRadius: 70 / 2,
-          justifyContent: "center",
-          backgroundColor: "black",
-          marginLeft: "auto",
-          position: "absolute",
-          bottom: 70,
-          right: 25,
-          alignContent: "center",
-        }}
-      >
+      <Pressable onPress={toggleModal} style={styles.menuFab}>
         <MaterialIcons
-          style={{ textAlign: "center" }}
+          style={styles.menuFabIcon}
           name="menu-book"
-          size={20}
+          size={24}
           color="white"
         />
-        <Text
-          style={{ textAlign: "center", color: "white", fontWeight: "500", fontSize: 8 }}
-        >
-          MENU
-        </Text>
+        <Text style={styles.menuFabText}>MENU</Text>
       </Pressable>
 
-      <Modal isVisible={modalVisible} onBackdropPress={toggleModal}>
-        <View
-          style={{
-            height: 290,
-            width: 280,
-            backgroundColor: "black",
-            position: "absolute",
-            bottom: 35,
-            right: 3,
-            borderRadius: 15,
-            overflow: 'hidden'
-          }}
-        >
+      <Modal isVisible={modalVisible} onBackdropPress={toggleModal} style={styles.modal}>
+        <View style={styles.modalContent}>
           <ScrollView>
-            {menu.map((item, i) => (
-              <View
-                style={{
-                  padding: 14,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-                key={i}
-              >
-                <Text
-                  style={{ color: "#D0D0D0", fontWeight: "600", fontSize: 13 }}
-                >
-                  {item.name}
-                </Text>
-                <Text
-                  style={{ color: "#D0D0D0", fontWeight: "600", fontSize: 13 }}
-                >
-                  {item.items.length}
+            {menu.map((item) => (
+              <View key={item.id} style={styles.modalItem}>
+                <Text style={styles.modalItemName}>{item.name}</Text>
+                <Text style={styles.modalItemCount}>
+                  {item.items?.length || 0}
                 </Text>
               </View>
             ))}
           </ScrollView>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <View style={styles.modalLogoContainer}>
             <Image
-              style={{ width: 120, height: 70, resizeMode: "contain" }}
+              style={styles.modalLogo}
               source={{
                 uri: "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_284/Logo_f5xzza",
               }}
@@ -283,54 +143,24 @@ const MenuScreen = () => {
 
       {total === 0 ? null : (
         <Pressable
-          style={{
-            backgroundColor: "#00A877",
-            width: "95%",
-            padding: 10,
-            marginBottom: 5,
-            position: "absolute",
-            borderRadius: 14,
-            alignSelf: 'center',
-            bottom: 0,
-            elevation: 6
-          }}
+          style={styles.cartBar}
+          onPress={() =>
+            navigation.navigate("Cart", {
+              name: route.params.name,
+            })
+          }
         >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+          <View style={styles.cartBarContent}>
             <View>
-              <Text
-                style={{ fontSize: 11, fontWeight: "bold", color: "white" }}
-              >
-                {cart.length} items | {total}
+              <Text style={styles.cartBarInfoText}>
+                {cart.length} {cart.length === 1 ? 'item' : 'items'} | ₹{total}
               </Text>
-              <Text
-                style={{
-                  fontSize: 8,
-                  fontWeight: "500",
-                  marginTop: 3,
-                  color: "white",
-                }}
-              >
+              <Text style={styles.cartBarSubText}>
                 Extra Charges may Apply!
               </Text>
             </View>
 
-            <Pressable
-              onPress={() =>
-                navigation.navigate("Cart", {
-                  name: route.params.name,
-                })
-              }
-            >
-              <Text style={{ fontSize: 12, fontWeight: "600", color: "white" }}>
-                View Cart
-              </Text>
-            </Pressable>
+            <Text style={styles.cartBarViewText}>View Cart</Text>
           </View>
         </Pressable>
       )}
@@ -338,6 +168,242 @@ const MenuScreen = () => {
   );
 };
 
-export default MenuScreen;
+const styles = StyleSheet.create({
+  scrollView: {
+    marginTop: Platform.OS === 'android' ? 0 : 50,
+    flex: 1,
+  },
+  headerContainer: {
+    height: 300,
+    backgroundColor: "#B0C4DE",
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    marginBottom: 10,
+  },
+  headerTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    margin: 15,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchText: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 7,
+  },
+  infoCard: {
+    backgroundColor: "white",
+    height: 210,
+    marginHorizontal: 15,
+    marginVertical: 5,
+    padding: 15,
+    borderRadius: 15,
+    justifyContent: "center",
+    elevation:7,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+  },
+  infoCardTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  restaurantName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  infoCardIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  shareIcon: {
+    marginHorizontal: 14,
+  },
+  ratingTimeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 7,
+  },
+  ratingText: {
+    marginLeft: 3,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  dotSeparator: {
+    marginLeft: 5,
+    marginRight: 5,
+    fontWeight: 'bold',
+    color: 'gray',
+  },
+  timeText: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  cuisinesText: {
+    marginTop: 8,
+    color: "gray",
+    fontSize: 14,
+  },
+  detailRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  detailLabel: {
+    fontSize: 13,
+    fontWeight: "bold",
+    width: 60,
+  },
+  detailValue: {
+    marginLeft: 15,
+    fontSize: 13,
+    color: 'gray',
+  },
+  separator: {
+    borderColor: "#E0E0E0",
+    borderWidth: StyleSheet.hairlineWidth,
+    marginTop: 12,
+  },
+  deliveryInfoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  deliveryText: {
+    marginLeft: 10,
+    color: "gray",
+    fontSize: 13,
+  },
+  deliveryFeeText: {
+    marginLeft: 7,
+    color: "gray",
+    fontSize: 13,
+  },
+  menuTitle: {
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 10,
+    letterSpacing: 1,
+  },
+  menuSeparator: {
+    borderColor: "#E0E0E0",
+    borderWidth: StyleSheet.hairlineWidth,
+    height: 1,
+    marginTop: 12,
+    marginHorizontal: 20,
+  },
+  menuFab: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "black",
+    position: "absolute",
+    bottom: 85,
+    right: 25,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+  },
+  menuFabIcon: {
+  },
+  menuFabText: {
+    color: "white",
+    fontWeight: "500",
+    fontSize: 10,
+    marginTop: 2,
+  },
+  modal: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
+  modalContent: {
+    height: 350,
+    width: '100%',
+    backgroundColor: "black",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 20,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+  },
+  modalItem: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottomColor: '#333',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  modalItemName: {
+    color: "#E0E0E0",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  modalItemCount: {
+    color: "#A0A0A0",
+    fontWeight: "600",
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  modalLogoContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 10,
+    borderTopColor: '#333',
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  modalLogo: {
+    width: 100,
+    height: 60,
+    resizeMode: "contain",
+  },
+  cartBar: {
+    backgroundColor: "#00A877",
+    width: "95%",
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    position: "absolute",
+    borderRadius: 10,
+    alignSelf: "center",
+    bottom: Platform.OS === 'ios' ? 20 : 10,
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3.84,
+  },
+  cartBarContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  cartBarInfoText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "white",
+  },
+  cartBarSubText: {
+    fontSize: 11,
+    fontWeight: "500",
+    marginTop: 3,
+    color: "white",
+  },
+  cartBarViewText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "white",
+  },
+});
 
-const styles = StyleSheet.create({});
+export default MenuScreen;
